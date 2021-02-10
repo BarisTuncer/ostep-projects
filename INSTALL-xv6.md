@@ -135,4 +135,80 @@ Now, time to go do the projects!
 
 ## Linux
 
-TBD.
+#### Note: You will need a fair amount of disk space to compile the tools (around 9GiB).
+
+(This guide extends the info given at https://pdos.csail.mit.edu/6.S081/2020/tools.html)
+
+`git clone --recursive https://github.com/riscv/riscv-gnu-toolchain`
+
+We need some packages to compile the toolchain
+
+for Debian/Ubuntu: (Make sure you are running either "bullseye" or "sid" for your debian version)
+`sudo apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu`
+
+`sudo apt-get remove qemu-system-misc`
+
+`sudo apt-get install qemu-system-misc=1:4.2-3ubuntu6`
+
+for Fedora:
+
+`sudo dnf install makeinfo texinfo bison flex expat expat-devel.x86_64 pixman pixman-devel.x86_64`
+
+```sh
+$ cd riscv-gnu-toolchain
+$ ./configure --prefix=/usr/local
+$ sudo make
+$ cd ..
+```
+Next, retrieve and extract the source for QEMU 5.1.0:
+
+```sh
+$ wget https://download.qemu.org/qemu-5.1.0.tar.xz
+$ tar xf qemu-5.1.0.tar.xz
+```
+
+Build QEMU for riscv64-softmmu:
+```sh
+$ cd qemu-5.1.0
+$ ./configure --disable-kvm --disable-werror --prefix=/usr/local --target-list="riscv64-softmmu"
+$ make
+$ sudo make install
+$ cd ..
+```
+To test your installation, you should be able to check the followings:
+
+`$ riscv64-unknown-elf-gcc --version`
+
+Output should be something like:
+
+```sh
+riscv64-unknown-elf-gcc (GCC) 10.2.0
+Copyright (C) 2020 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```
+
+`$ qemu-system-riscv64 --version`
+
+Output should be something like:
+
+```sh
+QEMU emulator version 5.1.0
+Copyright (c) 2003-2020 Fabrice Bellard and the QEMU Project developers
+```
+
+It's time to get xv6 and xv6 book!
+
+`git clone git://github.com/mit-pdos/xv6-riscv.git`
+
+`git clone git://github.com/mit-pdos/xv6-riscv-book.git`
+
+Now you should be able to compile and run xv6:
+
+```sh
+cd xv6-riscv
+make qemu
+```
+
+To quit qemu type: `Ctrl-a x.`
+
